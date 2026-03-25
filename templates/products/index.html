@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}MARO | Кожаные сумки ручной работы{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="hero" class="w-full h-[85vh] pt-[104px]">
+    <div class="grid grid-cols-1 md:grid-cols-3 w-full h-full">
+        {% for hero in hero_images %}
+        <div class="relative w-full h-full group overflow-hidden bg-gray-100">
+            {% if hero.link %}
+            <a href="{{ hero.link }}" class="w-full h-full block">
+            {% endif %}
+            <img src="{{ hero.image.url }}" 
+                 alt="Hero Image" 
+                 class="w-full h-full object-cover grayscale transition-all duration-1000 cursor-pointer hero-image-slide" />
+            {% if hero.link %}
+            </a>
+            {% endif %}
+        </div>
+        {% empty %}
+        <!-- Если в админке нет фото, показываем временные заглушки -->
+        <div class="relative w-full h-full">
+            <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=1000&auto=format&fit=crop" alt="Placeholder 1" class="w-full h-full object-cover grayscale transition-all duration-1000 cursor-pointer hero-image-slide" />
+        </div>
+        <div class="relative w-full h-full">
+            <img src="https://images.unsplash.com/photo-1584916201218-f4242ceb4809?q=80&w=1000&auto=format&fit=crop" alt="Placeholder 2" class="w-full h-full object-cover grayscale transition-all duration-1000 cursor-pointer hero-image-slide" />
+        </div>
+        <div class="relative w-full h-full">
+            <img src="https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=1000&auto=format&fit=crop" alt="Placeholder 3" class="w-full h-full object-cover grayscale transition-all duration-1000 cursor-pointer hero-image-slide" />
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Collection Section -->
+<section id="collection" class="py-24 bg-white">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <div class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-serif text-brand-black mb-4">Коллекция</h2>
+            <p class="text-xs font-medium tracking-[0.2em] text-brand-gray uppercase">
+                Эксклюзивные модели сезона
+            </p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap justify-center gap-6 mb-12">
+            <button
+                class="filter-btn active text-xs font-bold tracking-widest uppercase text-brand-black border-b-2 border-brand-black pb-1 transition-colors"
+                data-filter="all">Все</button>
+            {% for category in categories %}
+            <button
+                class="filter-btn text-xs font-bold tracking-widest uppercase text-gray-400 border-b-2 border-transparent hover:text-brand-black hover:border-brand-black transition-all pb-1"
+                data-filter="{{ category.slug }}">{{ category.name }}</button>
+            {% endfor %}
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8" id="product-grid">
+            {% for product in products %}
+            <div class="product-item group cursor-pointer flex flex-col relative h-full animate-on-scroll opacity-0 translate-y-10 transition-all duration-700 ease-out"
+                data-category="{{ product.cat.slug }}">
+                <!-- Card Link Wrapper -->
+                <a href="{{ product.get_absolute_url }}" class="block flex-1">
+                    <!-- Image Aspect Ratio 3:4 -->
+                    <div class="relative overflow-hidden bg-gray-50 mb-6 aspect-[3/4]">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.title }}"
+                            class="w-full h-full object-cover object-bottom transition-transform duration-700 group-hover:scale-105" />
+                        {% endif %}
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1 pr-4">
+                            <h3
+                                class="text-lg font-serif text-brand-black mb-2 group-hover:opacity-70 transition-opacity">
+                                {{ product.title }}
+                            </h3>
+                            <p class="text-brand-gray text-xs font-light mb-1">
+                                {{ product.description|truncatechars:40 }}
+                            </p>
+                        </div>
+                        <div
+                            class="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                            <i data-lucide="arrow-right" class="w-4 h-4 text-brand-black"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <div class="mt-4 flex justify-between items-center border-t border-gray-100 pt-3 relative z-10">
+                    <span class="text-brand-black font-serif text-xl font-medium">
+                        {{ product.price }} ₽
+                    </span>
+                    <form action="{% url 'cart:cart_add' product.slug %}" method="post" class="ajax-cart-form m-0 p-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit"
+                            class="flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase text-brand-black hover:text-gray-500 transition-colors">
+                            <span>В корзину</span>
+                            <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Philosophy Section -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const slideImages = document.querySelectorAll('.hero-image-slide');
+        if (slideImages.length > 0) {
+            let currentIndex = 0;
+            // Изначально делаем первое фото цветным
+            slideImages[0].classList.remove('grayscale');
+            
+            setInterval(() => {
+                // Возвращаем текущему фото черно-белый эффект
+                slideImages[currentIndex].classList.add('grayscale');
+                
+                // Переходим к следующему индексу (со сбросом на 0)
+                currentIndex = (currentIndex + 1) % slideImages.length;
+                
+                // Делаем его цветным
+                slideImages[currentIndex].classList.remove('grayscale');
+            }, 2000);
+        }
+    });
+</script>
+{% endblock %}

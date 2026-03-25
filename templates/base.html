@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MARO | Leather Goods{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            black: '#1a1a1a',
+                            dark: '#222222',
+                            gray: '#888888',
+                            light: '#f9f9f9',
+                            border: '#e5e5e5'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'slide-in-right': 'slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #1a1a1a;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar - minimal */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body
+    class="bg-white min-h-screen text-brand-black font-sans selection:bg-brand-black selection:text-white flex flex-col">
+
+    <!-- Navbar -->
+    <nav id="main-nav" class="fixed w-full z-50 transition-all duration-500 bg-white py-6">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="{% url 'home' %}" class="flex flex-col cursor-pointer group">
+                <span class="text-3xl font-serif font-medium tracking-wide text-brand-black">
+                    MARO
+                </span>
+                <span
+                    class="text-[10px] uppercase tracking-[0.3em] text-brand-gray mt-0.5 group-hover:text-brand-black transition-colors">
+                    selected leather
+                </span>
+            </a>
+
+            <!-- Desktop Menu -->
+
+
+            <!-- Icons -->
+            <div class="flex items-center space-x-6 text-brand-black">
+                <button class="hover:text-brand-gray transition-colors">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
+
+                <a href="{% url 'wishlist:wishlist_detail' %}" id="wishlist-nav-link"
+                    class="hover:text-brand-gray transition-colors relative">
+                    <i data-lucide="heart" class="w-5 h-5"></i>
+                    <span
+                        class="absolute -top-2 -right-2 bg-red-400 text-white text-[10px] min-w-[16px] w-auto px-1 h-4 flex items-center justify-center rounded-full wishlist-badge {% if wishlist.count == 0 %}hidden{% endif %}">{{wishlist.count}}</span>
+                </a>
+
+                <a href="{% url 'cart:cart_show' %}" class="hover:text-brand-gray transition-colors relative">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <span
+                        class="absolute -top-2 -right-2 bg-red-400 text-white text-[10px] min-w-[16px] w-auto px-1 h-4 flex items-center justify-center rounded-full cart-badge {% if cart.count == 0 %}hidden{% endif %}">{{cart.count}}</span>
+                </a>
+
+                <button id="mobile-menu-btn" class="md:hidden ml-2 hover:text-brand-gray">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu"
+            class="hidden md:hidden absolute top-full left-0 w-full bg-white border-t border-gray-100 py-8 px-6 flex flex-col space-y-6 shadow-xl animate-fade-in">
+            <a href="{% url 'home' %}#collection"
+                class="text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">КОЛЛЕКЦИИ</a>
+            <a href="{% url 'home' %}#philosophy"
+                class="text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">МАТЕРИАЛЫ</a>
+            <a href="{% url 'home' %}#philosophy"
+                class="text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">О
+                МАСТЕРЕ</a>
+            <a href="#contact"
+                class="text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">КОНТАКТЫ</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-[#1A1A1A] text-white pt-24 pb-12">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 border-b border-white/10 pb-20">
+
+                <!-- Brand Column -->
+                <div class="md:col-span-1">
+                    <h3 class="text-3xl font-serif mb-6">MARO</h3>
+                    <div class="space-y-2 text-gray-400 text-sm font-light">
+                        <p>Ручная работа из итальянской кожи.</p>
+                        <p>Каждое изделие — уникально.</p>
+                    </div>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="md:col-span-1 md:text-center">
+                    <h4 class="text-xs font-bold tracking-[0.15em] uppercase mb-8">Контакты</h4>
+                    <div class="space-y-4 text-gray-400 text-sm font-light md:flex md:flex-col md:items-center">
+                        <p>+7 917 291 67 59</p>
+                        <a href="mailto:hello@maro-leather.ru"
+                            class="block hover:text-white transition-colors">hello@maro-leather.ru</a>
+                        <a href="{% url 'privacy_policy' %}"
+                            class="block hover:text-white transition-colors mt-4">Политика конфиденциальности</a>
+                        <a href="{% url 'returns_policy' %}"
+                            class="block hover:text-white transition-colors mt-2">Условия возврата</a>
+                    </div>
+                </div>
+
+                <!-- Hours Column -->
+                <div class="md:col-span-1 md:text-right">
+                    <h4 class="text-xs font-bold tracking-[0.15em] uppercase mb-8">Часы работы поддержки</h4>
+                    <div class="space-y-4 text-gray-400 text-sm font-light md:flex md:flex-col md:items-end">
+                        <p>Пн–Пт: 11:00–20:00</p>
+                        <p>Сб–Вс: 12:00–19:00</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div
+                class="pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-wider text-gray-600">
+                <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
+                    <p>© 2026 MARO Leather Goods.</p>
+                </div>
+                <div class="flex space-x-8 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors">Instagram</a>
+                    <a href="#" class="hover:text-white transition-colors">Telegram</a>
+                    <a href="#" class="hover:text-white transition-colors">Whatsapp</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Wishlist Sidebar (Hidden by default) -->
+    <div id="wishlistSidebar" class="hidden fixed inset-0 z-[60] flex justify-end" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div id="wishlistOverlay"
+            class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity opacity-0 transition-opacity duration-300">
+        </div>
+
+        <!-- Panel -->
+        <div id="wishlistPanel"
+            class="relative w-full max-w-[500px] h-full bg-white shadow-2xl p-6 md:p-10 overflow-y-auto transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col">
+            <div class="flex justify-between items-center mb-12 border-b border-gray-50 pb-6 shrink-0">
+                <h2 class="text-3xl font-serif text-brand-black">Избранное:</h2>
+                <button type="button"
+                    class="hover:rotate-90 transition-transform duration-300 p-2 -mr-2 text-brand-black"
+                    id="closeWishlistBtn">
+                    <span class="sr-only">Close panel</span>
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="relative flex-1">
+                <div id="wishlistContent" class="h-full">
+                    <!-- AJAX Content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Navbar Scroll Effect
+        const nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                nav.classList.add('bg-white/95', 'backdrop-blur-sm', 'shadow-sm', 'py-4');
+                nav.classList.remove('bg-white', 'py-6');
+            } else {
+                nav.classList.remove('bg-white/95', 'backdrop-blur-sm', 'shadow-sm', 'py-4');
+                nav.classList.add('bg-white', 'py-6');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileBtn && mobileMenu) {
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
+        <!-- Scroll to Top -->
+        <button id="scrollToTopBtn"
+            class="bg-white text-brand-black border border-gray-200 p-3 rounded-full shadow-md hover:bg-gray-50 transition-all translate-y-10 opacity-0 pointer-events-none"
+            aria-label="Наверх">
+            <i data-lucide="chevron-up" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+
+    <!-- Global Toast Container shifted up slightly -->
+    <div id="toast-container" class="fixed bottom-24 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Re-using existing main.js logic for cart/wishlist but might need updates -->
+    <script src="/static/js/main.js?v=5"></script>
+</body>
+
+</html>

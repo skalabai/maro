@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.title }} | MARO{% endblock %}
+
+{% block content %}
+<div class="pt-24 pb-12 min-h-screen bg-white animate-fade-in">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+
+        <!-- Breadcrumbs -->
+        <div class="text-xs tracking-[0.1em] text-gray-400 font-medium uppercase mb-6">
+            <a href="{% url 'home' %}" class="hover:text-brand-black transition-colors">Главная</a>
+            <span class="mx-2">/</span>
+            <span class="text-brand-black">{{ product.title }}</span>
+        </div>
+
+        <!-- Layout -->
+        <div class="flex flex-col lg:flex-row gap-12 lg:gap-16 relative items-start">
+
+            <!-- LEFT COLUMN: Gallery -->
+            <div class="w-full lg:w-[45%]">
+                <div class="space-y-4">
+                    <!-- Main Image Container - Enforce 3:4 Aspect Ratio -->
+                    <div class="w-full aspect-[3/4] bg-gray-50 relative overflow-hidden rounded-sm group cursor-zoom-in"
+                        id="main-image-container"
+                        onclick="openLightbox(document.getElementById('main-product-image').src)">
+                        {% if product.image %}
+                        <img id="main-product-image" src="{{ product.image.url }}" alt="{{ product.title }}"
+                            class="w-full h-full object-cover transition-transform duration-700 block" />
+
+                        <!-- Slider Arrows -->
+                        <button id="slider-prev"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10 hidden"
+                            aria-label="Предыдущее фото">
+                            <i data-lucide="chevron-left" class="w-5 h-5 text-gray-800"></i>
+                        </button>
+                        <button id="slider-next"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10 hidden"
+                            aria-label="Следующее фото">
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-800"></i>
+                        </button>
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-gray-400">Нет фото</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Thumbnails -->
+                    <div class="grid grid-cols-4 gap-3">
+                        <!-- Main Image Thumb -->
+                        {% if product.image %}
+                        <div
+                            class="thumbnail aspect-[3/4] bg-gray-50 cursor-pointer overflow-hidden border border-transparent hover:border-brand-black transition-all duration-300">
+                            <img src="{{ product.image.url }}" data-full="{{ product.image.url }}"
+                                class="w-full h-full object-cover" />
+                        </div>
+                        {% endif %}
+
+                        <!-- Extra Images -->
+                        {% for extra in images %}
+                        {% if extra.extra_image %}
+                        <div
+                            class="thumbnail aspect-[3/4] bg-gray-50 cursor-pointer overflow-hidden border border-transparent hover:border-brand-black transition-all duration-300">
+                            <img src="{{ extra.extra_image.url }}" data-full="{{ extra.extra_image.url }}"
+                                class="w-full h-full object-cover" />
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Sticky Info -->
+            <div class="w-full lg:w-[50%] lg:sticky lg:top-28 flex flex-col h-fit">
+                <div class="mb-auto w-full">
+                    <!-- Header -->
+                    <div class="flex justify-between items-start mb-4">
+                        <h1 class="text-4xl md:text-5xl font-serif text-brand-black">{{ product.title }}</h1>
+
+                        <!-- Wishlist Toggle (Preserving logic) -->
+                        <button class="wishlist-toggle p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                            data-product-id="{{ product.id }}"
+                            data-add-url="{% url 'wishlist:wishlist_add' product.id %}"
+                            data-remove-url="{% url 'wishlist:wishlist_remove' product.id %}"
+                            data-in-wishlist="{{ is_in_wishlist|lower }}">
+                            <i data-lucide="heart"
+                                class="wishlist-icon w-6 h-6 group-hover:fill-red-500 group-hover:text-red-500 transition-colors {% if is_in_wishlist %}fill-red-500 text-red-500{% endif %}"></i>
+                        </button>
+                    </div>
+
+                    <!-- Color Variants -->
+                    {% if product.group %}
+                    <div class="mb-8">
+                        <p class="text-[10px] text-gray-400 mb-3 uppercase tracking-widest font-bold">Цвет: <span
+                                class="text-brand-black">{{ product.color_name }}</span></p>
+                        <div class="flex flex-wrap gap-3">
+                            {% for variant in product.group.variants.all %}
+                            <a href="{{ variant.get_absolute_url }}" title="{{ variant.color_name }}"
+                                class="w-8 h-8 rounded-full border-2 transition-all duration-300 hover:scale-110 
+                                          {% if variant.id == product.id %}border-brand-black shadow-md p-[2px]{% else %}border-transparent shadow-sm hover:border-gray-300{% endif %}"
+                                style="background-color: {{ variant.color_hex }}; background-clip: content-box;">
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="flex items-center gap-4 mb-8">
+                        <p class="text-2xl font-serif text-brand-black">{{ product.price }} ₽</p>
+                        <span class="px-2 py-1 bg-gray-100 text-[10px] uppercase tracking-wider text-gray-600">В
+                            наличии</span>
+                    </div>
+
+                    <!-- Add to Cart Form -->
+                    <form action="{% url 'cart:cart_add' product.slug %}" method="post"
+                        class="ajax-cart-form space-y-4 mb-10">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                            class="w-full bg-brand-black text-white h-14 text-xs font-bold tracking-[0.2em] uppercase hover:bg-gray-800 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group">
+                            <span>Добавить в корзину</span>
+                            <span
+                                class="w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                            <!-- Price calculation would need JS or backend logic, just showing base price + label for now -->
+                            <span>{{ product.price }} ₽</span>
+                        </button>
+
+                        <!-- Quantity (Hidden or Styled) -->
+                        <!-- Simplified quantity for now, mimicking simple add -->
+                        <!-- Use hidden input for standard form submission if needed, but existing cart form might expect 'quantity' -->
+                        <div class="flex justify-center items-center gap-6 text-sm text-gray-500">
+                            <button type="button" class="qty-btn minus p-2 hover:text-black"><i data-lucide="minus"
+                                    class="w-4 h-4"></i></button>
+                            <input type="number" name="quantity" value="1" min="1" max="10"
+                                class="qty-input w-8 text-center bg-transparent border-none text-black font-medium focus:ring-0">
+                            <button type="button" class="qty-btn plus p-2 hover:text-black"><i data-lucide="plus"
+                                    class="w-4 h-4"></i></button>
+                        </div>
+                    </form>
+
+                    <!-- Accordions -->
+                    <div class="border-t border-gray-200">
+                        <!-- Description -->
+                        <details class="group border-b border-gray-200" open>
+                            <summary
+                                class="w-full py-5 flex justify-between items-center text-left cursor-pointer list-none">
+                                <span
+                                    class="font-serif text-lg text-brand-black group-hover:opacity-70 transition-opacity">Описание</span>
+                                <span class="transition-transform duration-300 group-open:rotate-180">
+                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                </span>
+                            </summary>
+                            <div class="overflow-hidden pb-6 animate-fade-in">
+                                <p class="text-sm font-light leading-7 text-gray-600 pb-4">
+                                    {{ product.description|linebreaksbr }}
+                                </p>
+                            </div>
+                        </details>
+
+                        <!-- Details -->
+                        <details class="group border-b border-gray-200">
+                            <summary
+                                class="w-full py-5 flex justify-between items-center text-left cursor-pointer list-none">
+                                <span
+                                    class="font-serif text-lg text-brand-black group-hover:opacity-70 transition-opacity">Детали</span>
+                                <span class="transition-transform duration-300 group-open:rotate-180">
+                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                </span>
+                            </summary>
+                            <div class="overflow-hidden pb-6">
+                                <ul class="text-sm font-light leading-7 text-gray-600 space-y-2">
+                                    {% if product.material and product.material != '-' %}
+                                    <li class="flex justify-between"><span class="text-gray-400">Материал</span>
+                                        <span class="text-right">{{ product.material }}</span>
+                                    </li>
+                                    {% endif %}
+
+                                    <li class="flex justify-between"><span class="text-gray-400">Размер</span>
+                                        <span class="text-right">
+                                            {% if product.length %}{{ product.length|floatformat:"-2" }}{% endif %}
+                                            {% if product.length and product.width %} × {% endif %}{% if product.width%}
+                                            {{ product.width|floatformat:"-2" }}{% endif %}
+                                            {% if product.width and product.depth %} × {% endif %}{% if product.depth%}
+                                            {{ product.depth|floatformat:"-2" }} см {% endif %}
+                                        </span>
+                                    </li>
+
+                                    {% if product.weight %}
+                                    <li class="flex justify-between"><span class="text-gray-400">Вес</span>
+                                        <span>{{ product.weight|floatformat:"-2" }} г</span>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </details>
+
+                        <!-- Delivery -->
+                        <details class="group border-b border-gray-200">
+                            <summary
+                                class="w-full py-5 flex justify-between items-center text-left cursor-pointer list-none">
+                                <span
+                                    class="font-serif text-lg text-brand-black group-hover:opacity-70 transition-opacity">Доставка
+                                    и возврат</span>
+                                <span class="transition-transform duration-300 group-open:rotate-180">
+                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                </span>
+                            </summary>
+                            <div class="overflow-hidden pb-6">
+                                <p class="text-sm font-light leading-7 text-gray-600">
+                                    Бесплатная доставка по России при заказе от 15 000 ₽.
+                                    Срок доставки: 2-5 рабочих дней. Возврат возможен в течение 14 дней.
+                                </p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- Bottom contact hint -->
+                <div class="mt-8 pt-8 text-xs text-gray-400 font-light text-left border-t border-gray-50 w-full">
+                    Есть вопросы? <a href="#" class="underline hover:text-brand-black">Напишите нам в WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Recommended Products Section -->
+{% if recommended_products %}
+<section class="max-w-[1440px] mx-auto px-6 lg:px-12 mt-32 mb-10">
+    <div class="text-center mb-16">
+        <h2 class="text-3xl font-serif text-brand-black mb-3">Вам может понравиться</h2>
+        <div class="h-px w-10 bg-brand-black mx-auto"></div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {% for prod in recommended_products %}
+        <div
+            class="group cursor-pointer flex flex-col relative h-full animate-on-scroll opacity-0 translate-y-10 transition-all duration-700 ease-out">
+            <a href="{{ prod.get_absolute_url }}" class="block flex-1">
+                <div class="relative overflow-hidden bg-gray-50 mb-6 aspect-[3/4]">
+                    {% if prod.image %}
+                    <img src="{{ prod.image.url }}" alt="{{ prod.title }}"
+                        class="w-full h-full object-cover object-bottom transition-transform duration-700 group-hover:scale-105 relative z-0" />
+                    {% endif %}
+                </div>
+
+                <div class="flex justify-between items-start">
+                    <div class="flex-1 pr-4">
+                        <h3 class="text-lg font-serif text-brand-black mb-1 group-hover:opacity-70 transition-opacity">
+                            {{ prod.title }}
+                        </h3>
+                    </div>
+                </div>
+            </a>
+
+            <div class="mt-4 flex justify-between items-center border-t border-gray-100 pt-3 relative z-10">
+                <span class="text-brand-black font-serif text-lg font-medium">
+                    {{ prod.price }} ₽
+                </span>
+                <form action="{% url 'cart:cart_add' prod.slug %}" method="post" class="ajax-cart-form m-0 p-0">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit"
+                        class="flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase text-brand-black hover:text-gray-500 transition-colors">
+                        <span>В корзину</span>
+                        <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Lightbox Modal -->
+<div id="lightbox"
+    class="fixed inset-0 z-[200] bg-black/95 hidden flex-col justify-center items-center opacity-0 transition-opacity duration-300">
+    <button id="lightbox-close" class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-8 h-8"></i>
+    </button>
+    <img id="lightbox-img" src="" alt="Full resolution"
+        class="max-w-[95vw] max-h-[95vh] object-contain transform scale-95 transition-transform duration-300">
+</div>
+
+<script>
+    // Simple script to handle thumbnail clicks since main.js might rely on specific classes
+    document.addEventListener('DOMContentLoaded', () => {
+        const thumbnails = document.querySelectorAll('.thumbnail img');
+        const mainImage = document.getElementById('main-product-image');
+
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', function () {
+                if (mainImage) {
+                    // Update src
+                    mainImage.src = this.getAttribute('data-full');
+                    // Update active border state logic could go here
+                    thumbnails.forEach(t => t.parentElement.classList.remove('border-brand-black'));
+                    this.parentElement.classList.add('border-brand-black');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

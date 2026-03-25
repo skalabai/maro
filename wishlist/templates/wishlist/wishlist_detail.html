@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Избранное | MARO{% endblock %}
+
+{% block content %}
+<div class="pt-32 pb-24 min-h-screen bg-white animate-fade-in">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-serif text-brand-black mb-4">Избранное</h1>
+            <p class="text-xs font-bold tracking-[0.2em] uppercase text-gray-400">
+                ВАШ СПИСОК ЖЕЛАНИЙ
+            </p>
+        </div>
+
+        {% if wishlist %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            {% for product in wishlist %}
+            <div class="group relative">
+                <!-- Card Link Wrapper -->
+                <a href="{{ product.get_absolute_url }}" class="block">
+                    <!-- Image Aspect Ratio 3:4 -->
+                    <div class="relative overflow-hidden bg-gray-50 mb-6 aspect-[3/4]">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.title }}"
+                            class="w-full h-full object-cover object-bottom transition-transform duration-700 group-hover:scale-105" />
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-gray-400">Нет фото</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1 pr-4">
+                            <h3
+                                class="text-lg font-serif text-brand-black mb-2 group-hover:opacity-70 transition-opacity">
+                                {{ product.title }}
+                            </h3>
+                            <p class="text-brand-gray text-xs font-light mb-1">
+                                {{ product.description|truncatechars:40 }}
+                            </p>
+                            <div class="mt-2 text-brand-black font-serif text-lg font-medium">
+                                {{ product.price }} ₽
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Remove Button (Absolute top right) -->
+                <form action="{% url 'wishlist:wishlist_remove' product.id %}" method="post"
+                    class="absolute top-4 right-4 z-10">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-white hover:text-red-500 transition-colors shadow-sm text-gray-400"
+                        title="Удалить">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-20 bg-gray-50 rounded-lg">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <i data-lucide="heart" class="w-8 h-8 text-gray-300"></i>
+            </div>
+            <h2 class="text-2xl font-serif text-brand-black mb-4">Список пуст</h2>
+            <p class="text-gray-400 mb-8 max-w-md mx-auto">
+                Добавьте товары в избранное, чтобы не потерять их.
+            </p>
+            <a href="{% url 'home' %}"
+                class="inline-block bg-brand-black text-white px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-gray-800 transition-colors">
+                Перейти в каталог
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

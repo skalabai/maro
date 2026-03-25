@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARO | Leather Goods</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+            },
+            colors: {
+              brand: {
+                black: '#1a1a1a',
+                dark: '#222222',
+                gray: '#888888',
+                light: '#f9f9f9',
+                border: '#e5e5e5'
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 1s ease-out forwards',
+              'slide-in-right': 'slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              slideInRight: {
+                '0%': { transform: 'translateX(100%)' },
+                '100%': { transform: 'translateX(0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+      body {
+        background-color: #ffffff;
+        color: #1a1a1a;
+        scroll-behavior: smooth;
+      }
+      /* Custom scrollbar - minimal */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
+    </style>
+</head>
+<body class="bg-white min-h-screen text-brand-black font-sans selection:bg-brand-black selection:text-white flex flex-col">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 bg-white py-6">
+      <div class="max-w-[1440px] mx-auto px-6 lg:px-12 flex justify-between items-center">
+        <!-- Logo -->
+        <a href="#" class="flex flex-col cursor-pointer group" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">
+          <span class="text-3xl font-serif font-medium tracking-wide text-brand-black">MARO</span>
+          <span class="text-[10px] uppercase tracking-[0.3em] text-brand-gray mt-0.5 group-hover:text-brand-black transition-colors">leather goods</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-10">
+            <a href="#collection" class="text-xs font-medium tracking-widest text-brand-dark hover:text-brand-gray transition-colors uppercase cursor-pointer">КОЛЛЕКЦИИ</a>
+            <a href="#philosophy" class="text-xs font-medium tracking-widest text-brand-dark hover:text-brand-gray transition-colors uppercase cursor-pointer">МАТЕРИАЛЫ</a>
+            <a href="#philosophy" class="text-xs font-medium tracking-widest text-brand-dark hover:text-brand-gray transition-colors uppercase cursor-pointer">О МАСТЕРЕ</a>
+            <a href="#contact" class="text-xs font-medium tracking-widest text-brand-dark hover:text-brand-gray transition-colors uppercase cursor-pointer">КОНТАКТЫ</a>
+        </div>
+
+        <!-- Icons -->
+        <div class="flex items-center space-x-6 text-brand-black">
+          <button class="hover:text-brand-gray transition-colors">
+            <i data-lucide="search" class="w-5 h-5 stroke-[1.5]"></i>
+          </button>
+          <button class="hover:text-brand-gray transition-colors relative hidden sm:block" onclick="alert('Favorites clicked')">
+            <i data-lucide="heart" class="w-5 h-5 stroke-[1.5]"></i>
+            <span class="absolute -top-2 -right-2 bg-red-400 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">2</span>
+          </button>
+          <button class="hover:text-brand-gray transition-colors relative" onclick="alert('Cart clicked')">
+            <i data-lucide="shopping-bag" class="w-5 h-5 stroke-[1.5]"></i>
+            <span class="absolute -top-2 -right-2 bg-red-400 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">13</span>
+          </button>
+          <button id="mobile-menu-btn" class="md:hidden ml-2 hover:text-brand-gray">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Overlay -->
+      <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white border-t border-gray-100 py-8 px-6 flex flex-col space-y-6 shadow-xl animate-fade-in">
+          <a href="#collection" class="mobile-link text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">КОЛЛЕКЦИИ</a>
+          <a href="#philosophy" class="mobile-link text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">МАТЕРИАЛЫ</a>
+          <a href="#philosophy" class="mobile-link text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">О МАСТЕРЕ</a>
+          <a href="#contact" class="mobile-link text-sm font-medium tracking-widest uppercase text-brand-black hover:text-brand-gray transition-colors cursor-pointer">КОНТАКТЫ</a>
+      </div>
+    </nav>
+
+    <main class="flex-1 mt-[88px]"> <!-- Added top margin to account for fixed navbar -->
+        <!-- Hero -->
+        <section id="hero" class="relative h-[85vh] w-full flex items-center bg-[#F9F9F9]">
+          <div class="max-w-[1440px] mx-auto px-6 lg:px-12 w-full">
+            <div class="max-w-2xl animate-fade-in">
+              <h1 class="text-5xl md:text-7xl font-serif font-normal text-brand-black mb-6 leading-tight">
+                Искусство в деталях
+              </h1>
+              
+              <p class="text-lg md:text-xl text-brand-gray font-light mb-10 max-w-md">
+                Кожаные сумки ручной работы из итальянской кожи
+              </p>
+              
+              <a href="#collection" class="inline-block bg-brand-black text-white text-xs font-bold tracking-[0.15em] uppercase px-10 py-5 hover:bg-gray-800 transition-colors">
+                Смотреть коллекцию
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Collection (Services) -->
+        <section id="collection" class="py-24 bg-white">
+          <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="text-center mb-20">
+              <h2 class="text-4xl md:text-5xl font-serif text-brand-black mb-4">Коллекция</h2>
+              <p class="text-xs font-medium tracking-[0.2em] text-brand-gray uppercase">
+                Эксклюзивные модели сезона
+              </p>
+            </div>
+    
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8">
+                <!-- Product 1 -->
+                <div class="group cursor-pointer">
+                  <div class="relative overflow-hidden bg-gray-50 mb-6 aspect-[3/4]">
+                    <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=1200&auto=format&fit=crop" alt="Шоппер" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
+                  </div>
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1 pr-4">
+                      <h3 class="text-lg font-serif text-brand-black mb-2 group-hover:opacity-70 transition-opacity">Шоппер</h3>
+                      <p class="text-brand-gray text-xs font-light mb-1">Натуральная кожа и ручная работа</p>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-brand-black"></i>
+                    </div>
+                  </div>
+                  <div class="mt-4 flex justify-between items-center border-t border-gray-100 pt-3">
+                     <span class="text-brand-black font-serif text-xl font-medium">7000 ₽</span>
+                    <span class="text-[10px] font-semibold tracking-widest uppercase text-brand-black border-b border-transparent group-hover:border-brand-black transition-all pb-0.5">Подробнее</span>
+                  </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden bg-gray-50 mb-6 aspect-[3/4]">
+                      <img src="https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?q=80&w=1200&auto=format&fit=crop" alt="Сумка-мешок" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="flex justify-between items-start">
+                      <div class="flex-1 pr-4">
+                        <h3 class="text-lg font-serif text-brand-black mb-2 group-hover:opacity-70 transition-opacity">Сумка-мешок</h3>
+                        <p class="text-brand-gray text-xs font-light mb-1">Сумка из натуральной кожи ручной работы</p>
+                      </div>
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                          <i data-lucide="arrow-right" class="w-4 h-4 text-brand-black"></i>
+                      </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center border-t border-gray-100 pt-3">
+                       <span class="text-brand-black font-serif text-xl font-medium">6000 ₽</span>
+                      <span class="text-[10px] font-semibold tracking-widest uppercase text-brand-black border-b border-transparent group-hover:border-brand-black transition-all pb-0.5">Подробнее</span>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden bg-gray-50 mb-6 aspect-[3/4]">
+                      <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=1200&auto=format&fit=crop" alt="Кросс-боди" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="flex justify-between items-start">
+                      <div class="flex-1 pr-4">
+                        <h3 class="text-lg font-serif text-brand-black mb-2 group-hover:opacity-70 transition-opacity">Кросс-боди</h3>
+                        <p class="text-brand-gray text-xs font-light mb-1">Идеальный спутник для города</p>
+                      </div>
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                          <i data-lucide="arrow-right" class="w-4 h-4 text-brand-black"></i>
+                      </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center border-t border-gray-100 pt-3">
+                       <span class="text-brand-black font-serif text-xl font-medium">5500 ₽</span>
+                      <span class="text-[10px] font-semibold tracking-widest uppercase text-brand-black border-b border-transparent group-hover:border-brand-black transition-all pb-0.5">Подробнее</span>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden bg-gray-50 mb-6 aspect-[3/4]">
+                      <img src="https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=1200&auto=format&fit=crop" alt="Мини-тоут" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
+                    </div>
+                    <div class="flex justify-between items-start">
+                      <div class="flex-1 pr-4">
+                        <h3 class="text-lg font-serif text-brand-black mb-2 group-hover:opacity-70 transition-opacity">Мини-тоут</h3>
+                        <p class="text-brand-gray text-xs font-light mb-1">Элегантность в миниатюре</p>
+                      </div>
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                          <i data-lucide="arrow-right" class="w-4 h-4 text-brand-black"></i>
+                      </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center border-t border-gray-100 pt-3">
+                       <span class="text-brand-black font-serif text-xl font-medium">4500 ₽</span>
+                      <span class="text-[10px] font-semibold tracking-widest uppercase text-brand-black border-b border-transparent group-hover:border-brand-black transition-all pb-0.5">Подробнее</span>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Philosophy (Portfolio) -->
+        <section id="philosophy" class="py-32 bg-white">
+          <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="max-w-3xl mx-auto text-center animate-fade-in">
+              <h2 class="text-4xl md:text-5xl font-serif text-brand-black mb-10">
+                Философия MARO
+              </h2>
+              
+              <div class="space-y-8 text-brand-dark font-light leading-relaxed text-lg">
+                <p>
+                  Мы создаем не просто сумки, а вещи, которые становятся частью вашей истории. 
+                  Каждое изделие — результат кропотливой работы мастера, который вкладывает душу в каждую деталь.
+                </p>
+                <p>
+                  Используя только лучшие материалы и традиционные техники, мы создаем продукты, 
+                  которые прослужат десятилетия и с годами станут только лучше.
+                </p>
+              </div>
+    
+              <a href="#about" class="inline-flex items-center mt-12 text-xs font-bold tracking-[0.15em] uppercase text-brand-black hover:opacity-70 transition-opacity">
+                Узнать историю бренда <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-[#1A1A1A] text-white pt-24 pb-12">
+      <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-16 md:gap-8 border-b border-white/10 pb-20">
+          
+          <!-- Brand Column -->
+          <div class="md:col-span-1">
+            <h3 class="text-3xl font-serif mb-6">MARO</h3>
+            <div class="space-y-2 text-gray-400 text-sm font-light">
+              <p>Ручная работа из итальянской кожи.</p>
+              <p>Каждое изделие — уникально.</p>
+            </div>
+          </div>
+
+          <!-- Contact Column -->
+          <div class="md:col-span-1">
+            <h4 class="text-xs font-bold tracking-[0.15em] uppercase mb-8">Контакты</h4>
+            <div class="space-y-4 text-gray-400 text-sm font-light">
+              <p>Москва, Петровка 15</p>
+              <p>+7 (495) 123-45-67</p>
+              <a href="mailto:hello@maro-leather.ru" class="block hover:text-white transition-colors">hello@maro-leather.ru</a>
+            </div>
+          </div>
+
+          <!-- Hours Column -->
+          <div class="md:col-span-1">
+            <h4 class="text-xs font-bold tracking-[0.15em] uppercase mb-8">Часы работы</h4>
+            <div class="space-y-4 text-gray-400 text-sm font-light">
+              <p>Пн–Пт: 11:00–20:00</p>
+              <p>Сб–Вс: 12:00–19:00</p>
+            </div>
+          </div>
+
+          <!-- Subscribe Column -->
+          <div class="md:col-span-1">
+            <h4 class="text-xs font-bold tracking-[0.15em] uppercase mb-8">Подписка</h4>
+            <form class="flex w-full" onsubmit="event.preventDefault(); alert('Subscribed!')">
+              <input 
+                type="email" 
+                placeholder="Ваш email" 
+                class="w-full bg-white/5 border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder-gray-600"
+              >
+              <button class="bg-white text-black px-5 hover:bg-gray-200 transition-colors">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-wider text-gray-600">
+          <p>© 2024 MARO Leather Goods.</p>
+          <div class="flex space-x-8 mt-4 md:mt-0">
+            <a href="#" class="hover:text-white transition-colors">Instagram</a>
+            <a href="#" class="hover:text-white transition-colors">Telegram</a>
+            <a href="#" class="hover:text-white transition-colors">Whatsapp</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Navbar Interaction
+        const navbar = document.getElementById('navbar');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        const menuIcon = mobileMenuBtn.querySelector('i');
+
+        // Scroll Effect
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                navbar.classList.add('bg-white/95', 'backdrop-blur-sm', 'shadow-sm', 'py-4');
+                navbar.classList.remove('py-6');
+            } else {
+                navbar.classList.remove('bg-white/95', 'backdrop-blur-sm', 'shadow-sm', 'py-4');
+                navbar.classList.add('py-6');
+            }
+        });
+
+        // Mobile Menu Toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                // Change icon to X (Not easy with Lucide raw SVG replacement, so we'll just toggle class or re-render)
+                // Simplest is to just let it be or use two icons and toggle visibility
+            } else {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Close mobile menu on link click
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
